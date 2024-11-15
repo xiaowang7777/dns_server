@@ -11,6 +11,8 @@ func main() {
 	if err := dns.ListenAndServe(":8053", "udp", dns.HandlerFunc(func(w dns.ResponseWriter, r *dns.Msg) {
 		name := r.Question[0].Name[:len(r.Question[0].Name)-1]
 
+		fmt.Println("parse domain:" + name)
+
 		resp, err := exec.Command("nslookup", name).CombinedOutput()
 		if err != nil {
 			return
@@ -20,6 +22,8 @@ func main() {
 		respMsg := new(dns.Msg)
 		respMsg.SetReply(r)
 		if ip != nil {
+			fmt.Println("parse domain:" + name + " success,ip:" + ip.String())
+
 			respMsg.Answer = append(
 				respMsg.Answer,
 				&dns.A{
